@@ -13,8 +13,8 @@ int main() {
   std::cout << first->ToString() << std::endl;  // hi
   std::cout << first->Size() << std::endl;      // 2
   // std::cout << first->GetAt(2) << std::endl;    //exception testing
-  first->SetAt(1, 'e');
-  std::cout << first->ToString() << std::endl;
+  // first->SetAt(1, 'e');
+  // std::cout << first->ToString() << std::endl;
 
   BLL* copy = first;
   std::cout << copy->ToString() << std::endl;
@@ -33,9 +33,21 @@ int main() {
   third->PushBack('a');
   third->PushBack('r');
   // first -> = new Node();
-  first->Join(0, third);
+  first->Join(1, third);  // h -> lar -> e , first: he, third: lar
   std::cout << first->ToString() << std::endl;
   std::cout << first->Size() << std::endl;
+  std::cout << first->GetAt(2) << std::endl;
+  // std::cout << first->IsBLLAcyclic() << std::endl;
+
+  // BLL* four = new BLL();
+  // four->PushBack('E');
+  // first->Join(1, four);
+  // four->Join(0, first);
+  // std::cout << four->ToString() << std::endl;
+  // std::cout << first->IsBLLAcyclic() << std::endl;
+  // BLL* four;
+  // four = first;
+  // std::cout << four->ToString() << std::endl;
 
   // /////////////////////////////////////
 

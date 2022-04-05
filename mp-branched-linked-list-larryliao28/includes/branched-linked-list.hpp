@@ -26,13 +26,14 @@ public:
   std::string ToStringHelper(Node* node) const;
   void Destruct(BLL*& list);
   void Clear();
+  bool IsBLLAcyclicHelp(Node* list) const;
 
-  // debug
-  Node* GetHead() const;
+  // only for testing
+  bool IsBLLAcyclic() const;
 
 private:
   Node* head_;
-  bool IsBLLAcyclic() const;
+  // bool IsBLLAcyclic() const;
 };
 
 #endif

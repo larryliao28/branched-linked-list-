@@ -1,5 +1,6 @@
 #include "branched-linked-list.hpp"
 
+#include <iostream>
 #include <stdexcept>
 
 BLL::BLL(): head_(nullptr) {}
@@ -56,6 +57,31 @@ BLL::BLL(const BLL& to_copy) {
   }
 }
 
+// equality operator
+BLL& BLL::operator=(const BLL& rhs) {
+  if (this == &rhs) {
+    return *this;
+  }
+  Clear();
+  if (rhs.head_ == nullptr) {
+    head_ = nullptr;
+    return *this;
+  }
+  head_ = new Node(rhs.head_->data_);
+  auto* prev = head_;
+  auto* current = rhs.head_->next_node_;
+  while (current != nullptr) {
+    auto* node = new Node(current->data_);
+    prev->next_node_ = node;
+    prev = node;
+    if (current->next_bll_ != nullptr) {
+      BLL(*(current->next_bll_));
+    }
+    current = current->next_node_;
+  }
+  return *this;
+}
+
 Node* BLL::PushBack(char dat) {
   if (head_ == nullptr) {
     Node* to_add = new Node(dat);
@@ -79,7 +105,8 @@ size_t BLL::SizeHelper(Node* node) const {
     return 0;
   }
   if (node->next_bll_ != nullptr) {
-    return SizeHelper(node->next_bll_->head_);
+    return SizeHelper(node->next_bll_->head_) + SizeHelper(node->next_node_) +
+           1;
   }
   return SizeHelper(node->next_node_) + 1;
 }
@@ -93,11 +120,24 @@ char BLL::GetAt(size_t idx) const {
   size_t tmp_idx = 0;
   while (tmp_idx != idx) {
     if (current->next_bll_ != nullptr) {
-      return current->next_bll_->GetAt(idx - tmp_idx);
+      std::cout << current->data_;
+      if ((current->next_bll_->Size()) < (Size() - tmp_idx - 1)) {  // 3 <= 5
+        tmp_idx += current->next_bll_->Size();  // tmp_idx = 3
+      } else {
+        return current->next_bll_->GetAt(idx - tmp_idx - 1);
+      }
+      // return GetAt(idx - 1);
     }
     current = current->next_node_;
+    if (current == nullptr) {
+      std::cout << " error";
+      return 'a';
+    }
     tmp_idx++;
+    std::cout << tmp_idx;
   }
+  // current->next_bll_->Size()
+
   return current->data_;
 }
 
@@ -132,39 +172,25 @@ std::string BLL::ToStringHelper(Node* node) const {
 }
 
 // detect cyclic, not complete
-bool BLL::IsBLLAcyclic() const {
-  if (head_ == nullptr) {
+bool BLL::IsBLLAcyclic() const { return IsBLLAcyclicHelp(head_); }
+bool BLL::IsBLLAcyclicHelp(Node* node) const {
+  if (node == nullptr) {
     return true;
   }
-  // Node* turtle = head_;
-  // Node* hare = head_->next_node_;
-  // while (turtle != nullptr && hare != nullptr && hare->next_node_ != nullptr)
-  // {
-  //   if (turtle == hare) {
-  //     return false;
-  //   }
-  //   if (turtle->next_bll_ != nullptr) {
-  //     turtle = turtle->next_bll_->head_;
-  //   }
-  //   // if (hare -> next_bll_ != nullptr) {
-  //   //   hare = hare -> next_bll_;
-  //   // }
-  //   turtle = turtle->next_node_;
-  //   hare = hare->next_node_->next_node_;
-  // }
-
-  // alternate approach, not complete
-  const int kCon = 1000;
-  Node* array[kCon];
-  Node* test = head_;
-  int i = 0;
-  while (test != nullptr) {
-    if (test->next_bll_ != nullptr) {
-      return IsBLLAcyclic();
+  Node* turtle = node;
+  Node* hare = node->next_node_;
+  while (turtle != nullptr && hare != nullptr && hare->next_node_ != nullptr) {
+    if (turtle == hare) {
+      return false;
     }
-    array[i] = test;
-    test = test->next_node_;
-    ++i;
+    if (hare->next_bll_ != nullptr) {
+      return IsBLLAcyclicHelp(hare->next_bll_->head_);
+    }
+    if (turtle->next_bll_ != nullptr) {
+      return IsBLLAcyclicHelp(turtle->next_bll_->head_);
+    }
+    turtle = turtle->next_node_;
+    hare = hare->next_node_->next_node_;
   }
   return true;
 }
@@ -185,6 +211,3 @@ void BLL::Join(size_t idx, BLL* list) {
   }
   current->next_bll_ = list;
 }
-
-// irrelevant
-Node* BLL::GetHead() const { return head_; }
