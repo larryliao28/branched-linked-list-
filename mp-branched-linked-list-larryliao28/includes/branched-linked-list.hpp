@@ -24,7 +24,11 @@ public:
   // helper functions
   size_t SizeHelper(Node* node) const;
   std::string ToStringHelper(Node* node) const;
-  void Destruct(BLL* list);
+  void Destruct(BLL*& list);
+  void Clear();
+
+  // debug
+  Node* GetHead() const;
 
 private:
   Node* head_;

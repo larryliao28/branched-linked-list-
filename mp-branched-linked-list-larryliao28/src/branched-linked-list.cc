@@ -5,7 +5,9 @@
 BLL::BLL(): head_(nullptr) {}
 
 // destructor
-BLL::~BLL() {
+BLL::~BLL() { Clear(); }
+
+void BLL::Clear() {
   if (head_ != nullptr) {
     Node* current = head_;
     while (current != nullptr) {
@@ -21,17 +23,17 @@ BLL::~BLL() {
 }
 
 // test destructor
-void BLL::Destruct(BLL* list) {
+void BLL::Destruct(BLL*& list) {
   Node* curr = list->head_;
   while (curr != nullptr) {
     if (curr->next_bll_ != nullptr) {
-      Destruct(curr->next_bll_);
+      return Destruct(curr->next_bll_);
     }
     Node* tmp = curr->next_node_;
     delete curr;
     curr = tmp;
   }
-  head_ = nullptr;
+  list->head_ = nullptr;
 }
 
 // copy constructor
@@ -91,7 +93,7 @@ char BLL::GetAt(size_t idx) const {
   size_t tmp_idx = 0;
   while (tmp_idx != idx) {
     if (current->next_bll_ != nullptr) {
-      current = current->next_bll_->head_;
+      return current->next_bll_->GetAt(idx - tmp_idx);
     }
     current = current->next_node_;
     tmp_idx++;
@@ -123,7 +125,8 @@ std::string BLL::ToStringHelper(Node* node) const {
     return "";
   }
   if (node->next_bll_ != nullptr) {
-    ToStringHelper(node->next_bll_->head_);
+    return node->data_ + ToStringHelper(node->next_bll_->head_) +
+           ToStringHelper(node->next_node_);
   }
   return node->data_ + ToStringHelper(node->next_node_);
 }
@@ -133,22 +136,36 @@ bool BLL::IsBLLAcyclic() const {
   if (head_ == nullptr) {
     return true;
   }
-  Node* turtle = head_;
-  Node* hare = head_->next_node_;
-  while (turtle != nullptr && hare != nullptr && hare->next_node_ != nullptr) {
-    if (turtle == hare) {
-      return false;
-    }
-    if (turtle->next_bll_ != nullptr) {
-      turtle = turtle->next_bll_->head_;
-    }
-    // if (hare -> next_bll_ != nullptr) {
-    //   hare = hare -> next_bll_;
-    // }
-    turtle = turtle->next_node_;
-    hare = hare->next_node_->next_node_;
-  }
+  // Node* turtle = head_;
+  // Node* hare = head_->next_node_;
+  // while (turtle != nullptr && hare != nullptr && hare->next_node_ != nullptr)
+  // {
+  //   if (turtle == hare) {
+  //     return false;
+  //   }
+  //   if (turtle->next_bll_ != nullptr) {
+  //     turtle = turtle->next_bll_->head_;
+  //   }
+  //   // if (hare -> next_bll_ != nullptr) {
+  //   //   hare = hare -> next_bll_;
+  //   // }
+  //   turtle = turtle->next_node_;
+  //   hare = hare->next_node_->next_node_;
+  // }
 
+  // alternate approach, not complete
+  const int kCon = 1000;
+  Node* array[kCon];
+  Node* test = head_;
+  int i = 0;
+  while (test != nullptr) {
+    if (test->next_bll_ != nullptr) {
+      return IsBLLAcyclic();
+    }
+    array[i] = test;
+    test = test->next_node_;
+    ++i;
+  }
   return true;
 }
 
@@ -156,14 +173,18 @@ void BLL::Join(size_t idx, BLL* list) {
   if (idx < 0 || idx >= Size()) {
     throw std::runtime_error("invalid index");
   }
-  // Node* current = head_;
-  // size_t tmp_idx = 0;
-  // while (tmp_idx != idx) {
-  //   if (current->next_bll_ != nullptr) {
-  //     current = current->next_bll_->head_;
-  //   }
-  //   current = current->next_node_;
-  //   tmp_idx++;
-  // }
-  // return current->data_;
+
+  Node* current = head_;
+  size_t tmp_idx = 0;
+  while (tmp_idx != idx) {
+    // if (current->next_bll_ != nullptr) {
+    //   current = current->next_bll_->head_;
+    // }
+    current = current->next_node_;
+    tmp_idx++;
+  }
+  current->next_bll_ = list;
 }
+
+// irrelevant
+Node* BLL::GetHead() const { return head_; }

@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include "branched-linked-list.hpp"
+#include "node.hpp"
 
 int main() {
   /* EXAMPLE INTERACTIONS WITH BLL */
@@ -12,8 +13,8 @@ int main() {
   std::cout << first->ToString() << std::endl;  // hi
   std::cout << first->Size() << std::endl;      // 2
   // std::cout << first->GetAt(2) << std::endl;    //exception testing
-  // first->SetAt(1, 'e');
-  // std::cout << first->ToString() << std::endl;
+  first->SetAt(1, 'e');
+  std::cout << first->ToString() << std::endl;
 
   BLL* copy = first;
   std::cout << copy->ToString() << std::endl;
@@ -26,6 +27,15 @@ int main() {
 
   // std::cout << second->ToString() << std::endl;  // i!@
   // std::cout << second->Size() << std::endl;      // 3
+
+  BLL* third = new BLL();
+  third->PushBack('l');
+  third->PushBack('a');
+  third->PushBack('r');
+  // first -> = new Node();
+  first->Join(0, third);
+  std::cout << first->ToString() << std::endl;
+  std::cout << first->Size() << std::endl;
 
   // /////////////////////////////////////
 
